@@ -2,9 +2,12 @@ import { View, Text, StyleSheet, Button, Alert, TouchableOpacity, TouchableHighl
 import React, { useState } from 'react'
 import Colors from '../../constants/Colors'
 import { useRouter } from 'expo-router'
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useHeaderHeight } from '@react-navigation/elements';
 
 const Welcome = () => {
   const router = useRouter()
+  const insets = useSafeAreaInsets();
 
   const handleVisualAssistancePress = () => {
     router.push('/visually-impaired-auth')
@@ -16,18 +19,18 @@ const Welcome = () => {
 
   return (
     <View style={styles.mainContainer}> 
-      <TouchableOpacity style={styles.topButton} onPress={() => handleVisualAssistancePress()}>
+      <TouchableOpacity style={[styles.topButton, { marginTop: 10 }]} onPress={() => handleVisualAssistancePress()}>
         <Text style={styles.buttonText}>I need visual assistance</Text>
       </TouchableOpacity>
       <View style={styles.middleBox}>
         <View style={styles.bar} />
-        <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+        <View style={{ flexDirection: 'column', alignItems: 'center', gap: 5 }}>
           <Text style={styles.headerText}>Welcome to UrbanEcho</Text>
           <Text style={styles.subText}>See the world together</Text>
         </View>
         <View style={styles.bar} />
       </View>
-      <TouchableOpacity style={styles.bottomButton} onPress={() => handleHelpPress()}>
+      <TouchableOpacity style={[styles.bottomButton, { marginBottom: insets.bottom + 10 }]} onPress={() => handleHelpPress()}>
         <Text style={styles.buttonText}>I'd like to help visually impaired people</Text>
       </TouchableOpacity>
     </View>
@@ -41,11 +44,11 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: Colors.background,
+    gap: 30
   },
   middleBox: {
     flexDirection: 'row', 
     alignItems: 'center', 
-    paddingVertical: 30
   },
   headerText: {
     color: Colors.fontColor,
@@ -56,7 +59,6 @@ export const styles = StyleSheet.create({
   subText: {
     color: Colors.fontColor,
     fontSize: 20,
-    marginTop: 5
   },
   bar: { 
     flex: 1, 
@@ -67,21 +69,17 @@ export const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
     borderRadius: 5,
     width: '100%',
-    height: '30%',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 60,
-    flexGrow: 1,
+    flex: 1
   },
   bottomButton: {
     backgroundColor: Colors.primary,
     borderRadius: 5,
     width: '100%',
-    height: '30%',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 60,
-    flexGrow: 1,
+    flex: 1
   },
   buttonText: {
     color: Colors.fontColor,

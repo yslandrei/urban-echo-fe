@@ -8,7 +8,7 @@ import { View, StyleSheet } from 'react-native';
 const Layout = () => {
   
   return (
-    <Stack >
+    <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }}/>
     </Stack>
   )
