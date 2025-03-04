@@ -17,9 +17,9 @@ const Layout = () => {
                 color: Colors.background,
             },
       }}>
-        <Stack.Screen name="welcome" options={{ }}/>
-        <Stack.Screen name="visually-impaired-auth" options={{ headerBackTitle: "Urban Echo" }}/>
-        <Stack.Screen name="volunteer-auth" options={{ headerBackTitle: "Urban Echo" }}/>
+        <Stack.Screen name="1-welcome" options={{ }}/>
+        <Stack.Screen name="2-do-you-have-an-account" options={{ headerBackTitle: "Urban Echo" }}/>
+        <Stack.Screen name="3-sign-up-or-in" options={{ headerBackTitle: "Back" }}/>
     </Stack>
   )
 }

@@ -6,7 +6,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 
 const Auth = () => {
   const [loading, setLoading] = useState(false);
-  const { onLogin, onRegister } = useAuth();
+  const { onSignIn: onLogin, onSignUp: onRegister } = useAuth();
 
   // Sign in with email and password
   const onLoginpress = async () => {

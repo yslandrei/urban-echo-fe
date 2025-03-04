@@ -5,9 +5,9 @@ import { useRouter, useSegments } from 'expo-router';
 
 interface AuthProps {
   authState: User | undefined;
-  onRegister: (email: string, password: string) => Promise<any>;
-  onLogin: (email: string, password: string) => Promise<any>;
-  onLogout: () => Promise<any>;
+  onSignUp: (email: string, password: string) => Promise<any>;
+  onSignIn: (email: string, password: string) => Promise<any>;
+  onSignOut: () => Promise<any>;
   initialized: boolean;
 }
 
@@ -15,9 +15,9 @@ const USER_KEY = 'stream-token';
 export const API_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 const AuthContext = createContext<AuthProps>({
     authState: undefined,
-    onRegister: async () => {},
-    onLogin: async () => {},
-    onLogout: async () => {},
+    onSignUp: async () => {},
+    onSignIn: async () => {},
+    onSignOut: async () => {},
     initialized: false,
 });
 
@@ -58,7 +58,7 @@ export const AuthProvider = ({ children }: any) => {
     if (!!authState?.authenticated && segment === '(auth)') {
         router.replace('/(app)');
     } else if (!authState?.authenticated && segment !== '(auth)') {
-        router.replace('/(auth)/welcome');
+        router.replace('/(auth)/1-welcome');
     }
   }, [initialized, authState]);
 
@@ -126,9 +126,9 @@ export const AuthProvider = ({ children }: any) => {
   };
 
   const value = {
-    onRegister: register,
-    onLogin: login,
-    onLogout: logout,
+    onSignUp: register,
+    onSignIn: login,
+    onSignOut: logout,
     authState,
     initialized,
   };
