@@ -55,6 +55,7 @@ const SignUpOrIn = () => {
     }
   }
 
+  
   // To Do: Shake listener for audio input
 //   React.useEffect(() => {
 //     const subscription = RNShake.addListener(() => {
