@@ -2,12 +2,12 @@ import { View, Text, StyleSheet, Button, Alert, TouchableOpacity, TouchableHighl
 import React, { useState } from 'react'
 import Colors from '../../constants/Colors'
 import { useRouter } from 'expo-router'
-import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useHeaderHeight } from '@react-navigation/elements';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useHeaderHeight } from '@react-navigation/elements'
 
 const Welcome = () => {
   const router = useRouter()
-  const insets = useSafeAreaInsets();
+  const insets = useSafeAreaInsets()
 
   const redirectTo2ndStepWithCues = () => {
     router.push('/2-do-you-have-an-account?isVisuallyImpaired=1')
@@ -18,8 +18,8 @@ const Welcome = () => {
   }
 
   return (
-    <View style={styles.mainContainer}> 
-      <TouchableOpacity style={[styles.topButton, { marginTop: 10 }]} onPress={ redirectTo2ndStepWithCues }>
+    <View style={styles.mainContainer}>
+      <TouchableOpacity style={[styles.topButton, { marginTop: 10 }]} onPress={redirectTo2ndStepWithCues}>
         <Text style={[styles.headerText, { padding: 20, textAlign: 'center' }]}>I need visual assistance</Text>
       </TouchableOpacity>
       <View style={styles.middleBox}>
@@ -30,8 +30,10 @@ const Welcome = () => {
         </View>
         <View style={styles.bar} />
       </View>
-      <TouchableOpacity style={[styles.bottomButton, { marginBottom: insets.bottom  }]} onPress={ redirectTo2nd }>
-        <Text style={[styles.headerText, { padding: 20, textAlign: 'center' }]}>I'd like to help visually impaired people</Text>
+      <TouchableOpacity style={[styles.bottomButton, { marginBottom: insets.bottom }]} onPress={redirectTo2nd}>
+        <Text style={[styles.headerText, { padding: 20, textAlign: 'center' }]}>
+          I'd like to help visually impaired people
+        </Text>
       </TouchableOpacity>
     </View>
   )
@@ -42,11 +44,11 @@ export const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     backgroundColor: Colors.background,
-    gap: 30
+    gap: 30,
   },
   middleBox: {
-    flexDirection: 'row', 
-    alignItems: 'center', 
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   headerText: {
     color: Colors.fontColor,
@@ -57,10 +59,10 @@ export const styles = StyleSheet.create({
     color: Colors.fontColor,
     fontSize: 18,
   },
-  bar: { 
-    flex: 1, 
-    height: 1, 
-    backgroundColor: Colors.fontColor 
+  bar: {
+    flex: 1,
+    height: 1,
+    backgroundColor: Colors.fontColor,
   },
   topButton: {
     backgroundColor: Colors.primary,
@@ -68,7 +70,7 @@ export const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1
+    flex: 1,
   },
   bottomButton: {
     backgroundColor: Colors.primary,
@@ -76,7 +78,7 @@ export const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1
+    flex: 1,
   },
   smallButton: {
     width: '100%',

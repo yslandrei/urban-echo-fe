@@ -13,7 +13,9 @@ const SignUpOrIn = () => {
   const router = useRouter()
   const insets = useSafeAreaInsets()
   const { onSignIn, onSignUp } = useAuth()
-  const { isVisuallyImpaired, hasAccount } = useLocalSearchParams()
+  const params = useLocalSearchParams()
+  const isVisuallyImpaired = params.isVisuallyImpaired === '1'
+  const hasAccount = params.hasAccount === '1'
 
   const [email, setEmail] = useState('')
   const [pass, setPass] = useState('')

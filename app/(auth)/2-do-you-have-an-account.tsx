@@ -9,21 +9,22 @@ import { useLocalSearchParams } from 'expo-router'
 const DoYouHaveAnAccount = () => {
   const router = useRouter()
   const insets = useSafeAreaInsets()
-  const { isVisuallyImpaired } = useLocalSearchParams()
+  const params = useLocalSearchParams()
+  const isVisuallyImpaired = params.isVisuallyImpaired === '1'
 
   const redirectToSignIn = () => {
-    router.push(`/3-sign-up-or-in?isVisuallyImpaired=${isVisuallyImpaired}&hasAccount=1`)
+    router.push(`/3-sign-up-or-in?isVisuallyImpaired=${params.isVisuallyImpaired}&hasAccount=1`)
   }
 
   const redirectToSignUp = () => {
-    router.push(`/3-sign-up-or-in?isVisuallyImpaired=${isVisuallyImpaired}`)
+    router.push(`/3-sign-up-or-in?isVisuallyImpaired=${params.isVisuallyImpaired}`)
   }
 
   return (
     <View style={[authStyles.mainContainer, { paddingBottom: insets.bottom }]}>
       {isVisuallyImpaired ? (
         <>
-          <TouchableOpacity style={authStyles.topButton} onPress={redirectToSignIn}>
+          <TouchableOpacity style={[authStyles.topButton, { marginTop: 10 }]} onPress={redirectToSignIn}>
             <Text style={authStyles.headerText}>Yes</Text>
           </TouchableOpacity>
           <View style={authStyles.middleBox}>
@@ -37,11 +38,8 @@ const DoYouHaveAnAccount = () => {
           <View style={[authStyles.middleBox, { marginTop: 10 }]}>
             <Text style={authStyles.headerText}>Do you have an account?</Text>
           </View>
-          <TouchableOpacity
-            style={isVisuallyImpaired ? authStyles.topButton : authStyles.smallButton}
-            onPress={redirectToSignIn}
-          >
-            <Text style={isVisuallyImpaired ? authStyles.headerText : authStyles.smallButtonText}>Yes</Text>
+          <TouchableOpacity style={authStyles.smallButton} onPress={redirectToSignIn}>
+            <Text style={authStyles.smallButtonText}>Yes</Text>
           </TouchableOpacity>
         </>
       )}
