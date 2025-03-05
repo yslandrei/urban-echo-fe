@@ -5,12 +5,11 @@ import Colors from '../../constants/Colors'
 
 const AppEntry = () => {
   const { onSignOut } = useAuth()
-  
+
   return (
-    <View style={styles.container}> 
+    <View style={styles.container}>
       <Text style={styles.font}>Inside App</Text>
       <Button title="Logout" onPress={() => onSignOut()} />
-      
     </View>
   )
 }
@@ -24,7 +23,7 @@ const styles = StyleSheet.create({
   },
   font: {
     color: Colors.fontColor,
-  }
+  },
 })
 
 export default AppEntry

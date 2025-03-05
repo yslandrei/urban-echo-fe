@@ -10,7 +10,7 @@ const Welcome = () => {
   const insets = useSafeAreaInsets();
 
   const redirectTo2ndStepWithCues = () => {
-    router.push('/2-do-you-have-an-account?playAudioCues=1')
+    router.push('/2-do-you-have-an-account?isVisuallyImpaired=1')
   }
 
   const redirectTo2nd = () => {
@@ -77,6 +77,18 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1
+  },
+  smallButton: {
+    width: '100%',
+    padding: 15,
+    backgroundColor: Colors.primary,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  smallButtonText: {
+    color: Colors.fontColor,
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 })
 

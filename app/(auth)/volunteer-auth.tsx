@@ -11,15 +11,15 @@ const VolunteerAuth = () => {
 }
 
 const styles = StyleSheet.create({
-    mainContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: Colors.background,
-    },
-    font: {
-        color: Colors.fontColor,
-    }
+  mainContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.background,
+  },
+  font: {
+    color: Colors.fontColor,
+  },
 })
 
 export default VolunteerAuth
