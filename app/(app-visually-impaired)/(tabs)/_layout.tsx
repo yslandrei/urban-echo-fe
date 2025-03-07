@@ -17,7 +17,6 @@ const Layout = () => {
   useEffect(() => {
     if (!authState?.authenticated) {
       console.log('disconnect user')
-      // TODO: disconnect the user when he closes the app. currently this is not working through this
       client?.disconnectUser()
     }
 
@@ -25,11 +24,9 @@ const Layout = () => {
       const user: User = { id: authState.id }
 
       try {
-        const client = new StreamVideoClient({ apiKey: STREAM_KEY, user, token: authState.streamToken })
+        const client = StreamVideoClient.getOrCreateInstance({ apiKey: STREAM_KEY, user, token: authState.streamToken })
         setClient(client)
-        setTimeout(() => {
-          console.log('client: ', client)
-        }, 1000)
+        console.log('Client created')
       } catch (e) {
         console.log('Error creating client: ', e)
       }
@@ -62,9 +59,9 @@ const InsideLayout = () => {
       }}
     >
       <Tabs.Screen
-        name="call"
+        name="start-a-call"
         options={{
-          title: 'Call',
+          title: 'Start a Call',
           tabBarIcon: ({ color }) => <FontAwesome size={28} name="phone" color={color} />,
         }}
       />
@@ -73,6 +70,17 @@ const InsideLayout = () => {
         options={{
           title: 'Settings',
           tabBarIcon: ({ color }) => <Ionicons size={28} name="cog-outline" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="(room)/[id]"
+        options={{
+          title: 'asd',
+          headerShown: false,
+          tabBarStyle: {
+            display: 'none',
+          },
+          href: null,
         }}
       />
     </Tabs>

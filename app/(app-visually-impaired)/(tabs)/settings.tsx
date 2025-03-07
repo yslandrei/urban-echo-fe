@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, Button } from 'react-native'
 import React from 'react'
 import { useAuth } from '../../../context/auth'
 import Colors from '../../../constants/Colors'
-import { styles as appStyles } from './call'
+import { styles as appStyles } from './start-a-call'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const Settings = () => {
