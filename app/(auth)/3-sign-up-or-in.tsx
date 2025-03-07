@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Colors from '../../constants/Colors'
 import { styles as authStyles } from './1-welcome'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -7,34 +7,37 @@ import { useRouter } from 'expo-router'
 import { useLocalSearchParams } from 'expo-router'
 import { useAuth } from '../../context/auth'
 import Spinner from 'react-native-loading-spinner-overlay'
-// import RNShake from 'react-native-shake';
+import { useShake } from '../../context/shake'
+import { UserType } from '../../types/User'
 
 const SignUpOrIn = () => {
   const router = useRouter()
   const insets = useSafeAreaInsets()
-  const { onSignIn, onSignUp } = useAuth()
+
   const params = useLocalSearchParams()
   const isVisuallyImpaired = params.isVisuallyImpaired === '1'
   const hasAccount = params.hasAccount === '1'
+
+  const { onSignIn, onSignUp } = useAuth()
 
   const [email, setEmail] = useState('')
   const [pass, setPass] = useState('')
   const [pass2, setPass2] = useState('')
   const [loading, setLoading] = useState(false)
 
+  // TODO: Use audio cues instead of alerts for visually impaired users for better accessibility
   const handleSignIn = async () => {
     if (!email || !pass) {
       alert('Please fill in all fields')
       return
     }
+
     setLoading(true)
-    try {
-      await onSignIn(email, pass)
-    } catch (e) {
-      Alert.alert('Error', 'Could not log in')
-    } finally {
-      setLoading(false)
+    const result = await onSignIn(email, pass)
+    if (result.error) {
+      Alert.alert('Error', result.msg)
     }
+    setLoading(false)
   }
 
   // TODO: After sign up we should select languages. So we should change useAuth and prob add a new variable "sign up finished"
@@ -48,26 +51,31 @@ const SignUpOrIn = () => {
       alert('Passwords do not match')
       return
     }
-    try {
-      await onSignUp(email, pass)
-    } catch (e) {
-      Alert.alert('Error', 'Could not log in')
-    } finally {
-      setLoading(false)
+
+    setLoading(true)
+    const result = await onSignUp(email, pass, isVisuallyImpaired ? UserType.blind : UserType.volunteer)
+    setLoading(false)
+    if (result.error) {
+      Alert.alert('Error', result.msg)
+    } else {
+      router.push(`/(auth)/4-pick-languages?isVisuallyImpaired=${params.isVisuallyImpaired}`)
     }
   }
 
-  // To Do: Shake listener for audio input
-  //   React.useEffect(() => {
-  //     const subscription = RNShake.addListener(() => {
-  //       console.log('Shake detected!');
-  //     });
+  // TODO: Shake listener for audio input
+  useShake(
+    () => {
+      if (!isVisuallyImpaired) return
 
-  //     return () => {
-  //       console.log('dont know what this does');
-  //       subscription.remove();
-  //     };
-  //   }, []);
+      console.log('Device was shaken!')
+    },
+    {
+      threshold: 800,
+      debounceMs: 5000,
+      updateInterval: 100,
+      requiredMovements: 2,
+    }
+  )
 
   return (
     <View style={[authStyles.mainContainer, { paddingTop: 10 }]}>
@@ -103,7 +111,7 @@ const SignUpOrIn = () => {
       <TouchableOpacity
         style={[
           authStyles.smallButton,
-          isVisuallyImpaired && { marginBottom: insets.bottom, height: '30%', justifyContent: 'center' },
+          isVisuallyImpaired && { marginBottom: insets.bottom, height: '42%', justifyContent: 'center' },
         ]}
         onPress={() => {
           hasAccount ? handleSignIn() : handleSignUp()

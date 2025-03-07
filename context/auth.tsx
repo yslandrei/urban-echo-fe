@@ -1,14 +1,14 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import * as SecureStore from 'expo-secure-store'
-import User from '@/types/User'
+import User, { UserType } from '../types/User'
 import { useRouter, useSegments } from 'expo-router'
 
 interface AuthProps {
   authState: User | undefined
-  onSignUp: (email: string, password: string) => Promise<any>
+  onSignUp: (email: string, password: string, type: UserType) => Promise<any>
   onSignIn: (email: string, password: string) => Promise<any>
   onSignOut: () => Promise<any>
-  initialized: boolean
+  onSetLanguages: (languages: string[]) => Promise<any>
 }
 
 const USER_KEY = 'stream-token'
@@ -18,7 +18,7 @@ const AuthContext = createContext<AuthProps>({
   onSignUp: async () => {},
   onSignIn: async () => {},
   onSignOut: async () => {},
-  initialized: false,
+  onSetLanguages: async () => {},
 })
 
 export const useAuth = () => {
@@ -39,6 +39,8 @@ export const AuthProvider = ({ children }: any) => {
           authenticated: true,
           id: object.user.id,
           email: object.user.email,
+          type: object.user.type,
+          languages: object.user.languages,
           jwtToken: object.jwtToken,
           streamToken: object.streamToken,
         })
@@ -55,14 +57,19 @@ export const AuthProvider = ({ children }: any) => {
   useEffect(() => {
     if (!initialized) return
 
+    if (!!authState?.authenticated && authState?.languages.length === 0) {
+      return
+    }
+
     if (!!authState?.authenticated && segment === '(auth)') {
-      router.replace('/(app)')
+      router.replace(`/(app-${authState?.type === UserType.blind ? 'visually-impaired' : 'volunteer'})`)
     } else if (!authState?.authenticated && segment !== '(auth)') {
       router.replace('/(auth)/1-welcome')
     }
   }, [initialized, authState])
 
   const login = async (email: string, password: string) => {
+    var json
     try {
       const result = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
@@ -72,12 +79,14 @@ export const AuthProvider = ({ children }: any) => {
         body: JSON.stringify({ email, password }),
       })
 
-      const json = await result.json()
+      json = await result.json()
 
       setAuthState({
         authenticated: true,
         id: json.user.id,
         email: json.user.email,
+        type: json.user.type,
+        languages: json.user.languages,
         jwtToken: json.jwtToken,
         streamToken: json.streamToken,
       })
@@ -86,27 +95,29 @@ export const AuthProvider = ({ children }: any) => {
 
       return result
     } catch (e) {
-      return { error: true, msg: (e as any).response.data.msg }
+      return { error: true, msg: json.error }
     }
   }
 
-  const register = async (email: string, password: string) => {
+  const register = async (email: string, password: string, type: UserType) => {
+    var json
     try {
       const result = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, type }),
       })
 
-      const json = await result.json()
-      console.log('register:', json)
+      json = await result.json()
 
       setAuthState({
         authenticated: true,
         id: json.user.id,
         email: json.user.email,
+        type: json.user.type,
+        languages: json.user.languages,
         jwtToken: json.jwtToken,
         streamToken: json.streamToken,
       })
@@ -115,7 +126,7 @@ export const AuthProvider = ({ children }: any) => {
 
       return json
     } catch (e) {
-      return { error: true, msg: (e as any).response.data.msg }
+      return { error: true, msg: json.error }
     }
   }
 
@@ -125,10 +136,48 @@ export const AuthProvider = ({ children }: any) => {
     setAuthState(undefined)
   }
 
+  const setLanguages = async (languages: string[]) => {
+    if (!authState) {
+      return { error: true, msg: 'Not authenticated' }
+    }
+
+    const id = authState?.id
+    const result = await fetch(`${API_URL}/api/user/setLanguages`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${authState?.jwtToken}`,
+      },
+      body: JSON.stringify({ id, languages }),
+    })
+
+    const json = await result.json()
+
+    if (json.error) {
+      return { error: true, msg: json.error }
+    }
+
+    setAuthState((prevState) => {
+      if (!prevState) return prevState
+      return {
+        ...prevState,
+        languages,
+      }
+    })
+
+    const storedUser = await SecureStore.getItemAsync(USER_KEY)
+    let parsedUser = storedUser ? JSON.parse(storedUser) : {}
+    parsedUser.languages = languages
+    await SecureStore.setItemAsync(USER_KEY, parsedUser)
+
+    return json
+  }
+
   const value = {
     onSignUp: register,
     onSignIn: login,
     onSignOut: logout,
+    onSetLanguages: setLanguages,
     authState,
     initialized,
   }

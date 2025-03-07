@@ -21,6 +21,7 @@ const Layout = () => {
       <Stack.Screen name="1-welcome" options={{}} />
       <Stack.Screen name="2-do-you-have-an-account" options={{ headerBackTitle: 'Urban Echo' }} />
       <Stack.Screen name="3-sign-up-or-in" options={{ headerBackTitle: 'Back' }} />
+      <Stack.Screen name="4-pick-languages" options={{ headerBackVisible: false, gestureEnabled: false }} />
     </Stack>
   )
 }

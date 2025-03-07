@@ -9,6 +9,7 @@ import { useLocalSearchParams } from 'expo-router'
 const DoYouHaveAnAccount = () => {
   const router = useRouter()
   const insets = useSafeAreaInsets()
+
   const params = useLocalSearchParams()
   const isVisuallyImpaired = params.isVisuallyImpaired === '1'
 
