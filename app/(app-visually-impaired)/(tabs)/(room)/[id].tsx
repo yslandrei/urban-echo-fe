@@ -6,6 +6,9 @@ import { Call, CallContent, StreamCall, useStreamVideoClient } from '@stream-io/
 import Spinner from 'react-native-loading-spinner-overlay'
 import Colors from '../../../../constants/Colors'
 import { CustomCallControls } from '../../../../components/call/CustomCallControls'
+import PiP from '@/components/call/PiP'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import MapPiP from '@/components/call/MapPiP'
 
 const Room = () => {
   const insets = useSafeAreaInsets()
@@ -37,15 +40,18 @@ const Room = () => {
   }
 
   return (
-    <View style={{ flex: 1, paddingBottom: 15, backgroundColor: Colors.background }}>
-      <Spinner visible={!call} animation="fade" size={'small'} overlayColor="rgba(0, 0, 0, 0.5)" />
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <View style={{ flex: 1, paddingBottom: 15, backgroundColor: 'black' }}>
+        <Spinner visible={!call} animation="fade" size={'small'} overlayColor="rgba(0, 0, 0, 0.5)" />
 
-      {call && (
-        <StreamCall call={call}>
-          <CallContent CallControls={() => <CustomCallControls onPress={endCall} />} />
-        </StreamCall>
-      )}
-    </View>
+        {call && (
+          <StreamCall call={call}>
+            <CallContent CallControls={() => <CustomCallControls onPress={endCall} />} />
+          </StreamCall>
+        )}
+        <View style={{ flex: 1, position: 'absolute', width: '100%', height: '100%' }}>{call && <MapPiP />}</View>
+      </View>
+    </GestureHandlerRootView>
   )
 }
 
