@@ -51,7 +51,8 @@
     "react-native-svg": "15.8.0",
     "react-native-web": "~0.19.13",
     "stream-chat-expo": "^6.6.6",
-    "stream-chat-react-native": "^6.6.6"
+    "stream-chat-react-native": "^6.6.6",
+    "expo-location": "~18.0.7"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
