@@ -17,9 +17,10 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import MapPiP from '../../../../components/call/MapPiP'
 import * as Location from 'expo-location'
 import { LocationUpdate } from '../../../../types/LocationUpdate'
+import CustomParticipantView from '@/components/call/CustomParticipantView'
 
 const LOCATION_UPDATE_TYPE = 'location-update'
-const LOCATION_UPDATE_INTERVAL = 1000
+const LOCATION_UPDATE_INTERVAL = 1500
 
 const Room = () => {
   const insets = useSafeAreaInsets()
@@ -110,7 +111,10 @@ const Room = () => {
 
         {call && (
           <StreamCall call={call}>
-            <CallContent CallControls={() => <CustomCallControls onPress={endCall} />} />
+            <CallContent
+              CallControls={() => <CustomCallControls onPress={endCall} />}
+              ParticipantView={CustomParticipantView}
+            />
           </StreamCall>
         )}
         <View style={{ flex: 1, position: 'absolute', width: '100%', height: '100%' }}>

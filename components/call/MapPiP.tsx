@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { View, Animated, Dimensions, TouchableOpacity, ActivityIndicator } from 'react-native'
 import Map from './Map'
 import { LocationUpdate } from '@/types/LocationUpdate'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 const { width, height } = Dimensions.get('window')
 
@@ -53,7 +54,7 @@ const MapPiP: React.FC<MapPiPProps> = ({ location }) => {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       {expanded && (
         <TouchableOpacity
           style={{
@@ -80,14 +81,14 @@ const MapPiP: React.FC<MapPiPProps> = ({ location }) => {
       >
         <TouchableOpacity style={{ flex: 1 }} onLongPress={() => !expanded && toggleExpand()} activeOpacity={1}>
           <View style={!showMap && { display: 'none' }}>
-            <Map location={location} />
+            <Map expanded={expanded} location={location} />
           </View>
           {!showMap && (
             <View style={{ flex: 1, justifyContent: 'center', backgroundColor: Colors.background, margin: -5 }}></View>
           )}
         </TouchableOpacity>
       </Animated.View>
-    </View>
+    </GestureHandlerRootView>
   )
 }
 
