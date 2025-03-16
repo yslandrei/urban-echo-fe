@@ -1,12 +1,26 @@
+import { NotificationProvider, initializeNotifications, redirectNotifications } from '@/context/notification'
 import { AuthProvider } from '../context/auth'
-import { Slot } from 'expo-router'
+import { Slot, useRouter } from 'expo-router'
+import * as Notifications from 'expo-notifications'
+import { useEffect } from 'react'
 
 // SplashScreen.preventAutoHideAsync();
 
+initializeNotifications()
+
 const Layout = () => {
+  const router = useRouter()
+  useEffect(() => {
+    router.replace('/(auth)')
+  }, [])
+
+  redirectNotifications(router)
+
   return (
     <AuthProvider>
-      <Slot />
+      <NotificationProvider>
+        <Slot />
+      </NotificationProvider>
     </AuthProvider>
   )
 }

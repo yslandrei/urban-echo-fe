@@ -75,7 +75,6 @@ const InsideLayout = () => {
       <Tabs.Screen
         name="(room)/[id]"
         options={{
-          title: 'asd',
           headerShown: false,
           tabBarStyle: {
             display: 'none',

@@ -43,6 +43,7 @@ export const AuthProvider = ({ children }: any) => {
           languages: object.user.languages,
           jwtToken: object.jwtToken,
           streamToken: object.streamToken,
+          friendCode: object.friendCode,
         })
       }
       setInitialized(true)
@@ -58,11 +59,19 @@ export const AuthProvider = ({ children }: any) => {
     if (!initialized) return
 
     if (!!authState?.authenticated && authState?.languages.length === 0) {
-      return
+      router.replace('/(auth)/4-pick-languages')
     }
 
-    if (!!authState?.authenticated && segment === '(auth)') {
+    if (!!authState?.authenticated) {
       router.replace(`/(app-${authState?.type === UserType.blind ? 'visually-impaired' : 'volunteer'})`)
+    } else if (
+      !!authState?.authenticated &&
+      segment === '(app-visually-impaired)' &&
+      authState?.type === UserType.volunteer
+    ) {
+      router.replace('/(app-volunteer)')
+    } else if (!!authState?.authenticated && segment === '(app-volunteer)' && authState?.type === UserType.blind) {
+      router.replace('/(app-visually-impaired)')
     } else if (!authState?.authenticated && segment !== '(auth)') {
       router.replace('/(auth)/1-welcome')
     }
@@ -89,6 +98,7 @@ export const AuthProvider = ({ children }: any) => {
         languages: json.user.languages,
         jwtToken: json.jwtToken,
         streamToken: json.streamToken,
+        friendCode: json.friendCode,
       })
 
       await SecureStore.setItemAsync(USER_KEY, JSON.stringify(json))
@@ -120,6 +130,7 @@ export const AuthProvider = ({ children }: any) => {
         languages: json.user.languages,
         jwtToken: json.jwtToken,
         streamToken: json.streamToken,
+        friendCode: json.friendCode,
       })
 
       await SecureStore.setItemAsync(USER_KEY, JSON.stringify(json))
@@ -142,7 +153,7 @@ export const AuthProvider = ({ children }: any) => {
     }
 
     const id = authState?.id
-    const result = await fetch(`${API_URL}/api/user/setLanguages`, {
+    const result = await fetch(`${API_URL}/api/user/set-languages`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

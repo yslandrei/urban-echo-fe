@@ -5,6 +5,7 @@ import Colors from '../../../constants/Colors'
 import { styles as globalStyles } from '../../(auth)/1-welcome'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
+import { useNotifications } from '@/context/notification'
 
 const StartACall = () => {
   const insets = useSafeAreaInsets()
@@ -13,7 +14,10 @@ const StartACall = () => {
 
   const { authState } = useAuth()
 
+  const { onSendNotificationsToRandomVolunteers } = useNotifications()
+
   const handleCallRandomVolunteer = () => {
+    onSendNotificationsToRandomVolunteers()
     router.push(`/(room)/${authState?.id}`)
   }
 

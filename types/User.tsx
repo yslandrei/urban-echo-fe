@@ -6,6 +6,7 @@ export default interface User {
   languages: string[]
   jwtToken: string
   streamToken: string
+  friendCode: string
 }
 
 export enum UserType {

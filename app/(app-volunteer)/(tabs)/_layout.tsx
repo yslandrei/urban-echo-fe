@@ -1,12 +1,54 @@
 import Colors from '../../../constants/Colors'
-import { AuthProvider } from '@/context/auth'
+import { AuthProvider, useAuth } from '@/context/auth'
 import { DarkTheme, DefaultTheme, Theme, ThemeProvider } from '@react-navigation/native'
 import { Slot, Stack, Tabs } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import { View, StyleSheet } from 'react-native'
 import FontAwesome from '@expo/vector-icons/FontAwesome'
+import { StreamVideo, StreamVideoClient, User } from '@stream-io/video-react-native-sdk'
+import { useEffect, useState } from 'react'
+import Ionicons from '@expo/vector-icons/Ionicons'
+
+const STREAM_KEY = process.env.EXPO_PUBLIC_STREAM_ACCESS_KEY || 'stream-api-key'
 
 const Layout = () => {
+  const [client, setClient] = useState<StreamVideoClient | null>(null)
+
+  const { authState } = useAuth()
+
+  useEffect(() => {
+    if (!authState?.authenticated) {
+      console.log('disconnect user')
+      client?.disconnectUser()
+    }
+
+    if (authState?.authenticated && authState.streamToken) {
+      const user: User = { id: authState.id }
+
+      try {
+        const client = StreamVideoClient.getOrCreateInstance({ apiKey: STREAM_KEY, user, token: authState.streamToken })
+        setClient(client)
+        console.log('Client created')
+      } catch (e) {
+        console.log('Error creating client: ', e)
+      }
+    }
+  }, [authState])
+
+  return (
+    <>
+      {client ? (
+        <StreamVideo client={client}>
+          <InsideLayout />
+        </StreamVideo>
+      ) : (
+        <InsideLayout />
+      )}
+    </>
+  )
+}
+
+const InsideLayout = () => {
   return (
     <Tabs
       screenOptions={{
@@ -25,7 +67,23 @@ const Layout = () => {
           tabBarIcon: ({ color }) => <FontAwesome size={28} name="home" color={color} />,
         }}
       />
-      <Tabs.Screen name="settings" />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Settings',
+          tabBarIcon: ({ color }) => <Ionicons size={28} name="cog-outline" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="(room)/[id]"
+        options={{
+          headerShown: false,
+          tabBarStyle: {
+            display: 'none',
+          },
+          href: null,
+        }}
+      />
     </Tabs>
   )
 }

@@ -2,7 +2,6 @@ import Colors from '@/constants/Colors'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import React, { useEffect, useState } from 'react'
 import { View, TextInput, FlatList, TouchableOpacity, Text, StyleSheet } from 'react-native'
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
 import { Region } from 'react-native-maps'
 
 const GOOGLE_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_CLOUD_KEY || 'google-api-key'
@@ -42,8 +41,6 @@ const PlacesSearch: React.FC<PlacesSearchProps> = ({ initialRegion, setDestinati
   }, [debouncedSearch])
 
   const fetchGooglePlacesResulsts = async (search: string) => {
-    console.log(GOOGLE_API_KEY)
-    console.log(process.env.EXPO_GOOGLE_CLOUD_KEY)
     const body = {
       input: search,
       locationBias: {

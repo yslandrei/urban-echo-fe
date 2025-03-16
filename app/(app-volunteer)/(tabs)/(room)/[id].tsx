@@ -8,6 +8,7 @@ import {
   CustomVideoEvent,
   StreamCall,
   StreamVideoEvent,
+  useCallStateHooks,
   useStreamVideoClient,
 } from '@stream-io/video-react-native-sdk'
 import Spinner from 'react-native-loading-spinner-overlay'
@@ -18,13 +19,9 @@ import * as Location from 'expo-location'
 import { LocationUpdate } from '../../../../types/LocationUpdate'
 import CustomParticipantView from '@/components/call/CustomParticipantView'
 import { useNotifications } from '@/context/notification'
+import { LOCATION_UPDATE_TYPE } from '@/app/(app-visually-impaired)/(tabs)/(room)/[id]'
 import CustomFloatingParticipantView from '@/components/call/CustomFloatingParticipantView'
 import { VolunteerCallControls } from '@/components/call/VolunteerCallControls'
-import { BlindHangupCallButton } from '@/components/call/BlindHangupCallButton'
-import { BlindCallControls } from '@/components/call/BlindCallControls'
-
-export const LOCATION_UPDATE_TYPE = 'location-update'
-const LOCATION_UPDATE_INTERVAL = 1500
 
 const Room = () => {
   const { id } = useLocalSearchParams<{ id: string }>()
@@ -33,61 +30,61 @@ const Room = () => {
   const [call, setCall] = useState<Call | null>(null)
   const client = useStreamVideoClient()
 
-  const { onSendNotificationsToRandomVolunteers } = useNotifications()
-
   useEffect(() => {
     if (!client || call) return
 
     const joinCall = async () => {
+      console.log(id)
       const call = client.call('default', id)
-      await call.join({ create: true })
+      await call.join()
       setCall(call)
     }
 
     joinCall()
   }, [])
 
+  const [location, setLocation] = useState<LocationUpdate>()
+
   useEffect(() => {
     if (!call) return
 
-    let interval
-    const getCurrentLocation = async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync()
-      if (status !== 'granted') {
-        console.log('Permission denied')
-        return
+    const handleCustomEvent = (event: StreamVideoEvent) => {
+      const customEvent = event as CustomVideoEvent
+      const payload = customEvent.custom
+      if (payload.type === LOCATION_UPDATE_TYPE) {
+        setLocation({
+          latitude: payload.data.latitude,
+          longitude: payload.data.longitude,
+          heading: payload.data.heading,
+        })
       }
-
-      let loc = await Location.getCurrentPositionAsync()
-      let heading = await Location.getHeadingAsync()
-
-      await call?.sendCustomEvent({
-        type: LOCATION_UPDATE_TYPE,
-        data: {
-          latitude: loc.coords.latitude,
-          longitude: loc.coords.longitude,
-          heading: heading.trueHeading,
-        },
-      })
     }
 
-    interval = setInterval(getCurrentLocation, LOCATION_UPDATE_INTERVAL)
+    const endCall = (event: StreamVideoEvent) => {
+      // We end the call since the visually impaired user left
+      call?.endCall()
+      setCall(null)
 
-    call.on('call.session_participant_left', onSendNotificationsToRandomVolunteers)
+      // Hack so useEffect is called again when user calls, disconnects and calls again
+      // router.back()
+      router.replace('/(app-volunteer)')
+    }
+
+    call.on('custom', handleCustomEvent)
+    call.on('call.session_participant_left', endCall)
 
     return () => {
-      clearInterval(interval)
-      call.off('call.session_participant_left', onSendNotificationsToRandomVolunteers)
+      call.off('custom', handleCustomEvent)
+      call.off('call.session_participant_left', endCall)
     }
   }, [call])
 
-  const endCall = async () => {
-    setCall(null)
-    console.log('Leaving call')
+  const leaveCall = async () => {
     await call?.leave()
+    setCall(null)
     // Hack so useEffect is called again when user calls, disconnects and calls again
     // router.back()
-    router.replace('/(app-visually-impaired)')
+    router.replace('/(app-volunteer)')
   }
 
   return (
@@ -99,12 +96,15 @@ const Room = () => {
           {call && (
             <StreamCall call={call}>
               <CallContent
-                CallControls={() => <BlindCallControls onPress={endCall} />}
+                CallControls={() => <VolunteerCallControls onPress={leaveCall} />}
                 FloatingParticipantView={() => <CustomFloatingParticipantView />}
                 // ParticipantView={CustomParticipantView}
               />
             </StreamCall>
           )}
+          <View style={{ flex: 1, position: 'absolute', width: '100%', height: '100%' }}>
+            {call && location && <MapPiP location={location} />}
+          </View>
         </View>
       </View>
     </GestureHandlerRootView>
