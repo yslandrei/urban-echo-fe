@@ -42,7 +42,7 @@ export const styles = StyleSheet.create({
   headerText: {
     color: Colors.fontColor,
     fontWeight: 'bold',
-    fontSize: 24,
+    fontSize: 32,
   },
   topButton: {
     backgroundColor: Colors.primary,

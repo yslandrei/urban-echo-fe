@@ -57,9 +57,10 @@ const SignUpOrIn = () => {
     setLoading(false)
     if (result.error) {
       Alert.alert('Error', result.msg)
-    } else {
-      router.push(`/(auth)/4-pick-languages?isVisuallyImpaired=${params.isVisuallyImpaired}`)
     }
+    // else {
+    //   router.push(`/(auth)/4-pick-languages?isVisuallyImpaired=${params.isVisuallyImpaired}`)
+    // }
   }
 
   // TODO: Shake listener for audio input
@@ -117,7 +118,7 @@ const SignUpOrIn = () => {
           hasAccount ? handleSignIn() : handleSignUp()
         }}
       >
-        <Text style={isVisuallyImpaired ? authStyles.headerText : authStyles.smallButtonText}>Next</Text>
+        <Text style={isVisuallyImpaired ? authStyles.buttonText : authStyles.smallButtonText}>Next</Text>
       </TouchableOpacity>
     </View>
   )

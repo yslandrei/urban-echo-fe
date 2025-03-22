@@ -41,9 +41,9 @@ export const AuthProvider = ({ children }: any) => {
           email: object.user.email,
           type: object.user.type,
           languages: object.user.languages,
+          friendCode: object.user.friendCode,
           jwtToken: object.jwtToken,
           streamToken: object.streamToken,
-          friendCode: object.friendCode,
         })
       }
       setInitialized(true)
@@ -58,8 +58,9 @@ export const AuthProvider = ({ children }: any) => {
   useEffect(() => {
     if (!initialized) return
 
-    if (!!authState?.authenticated && authState?.languages.length === 0) {
-      router.replace('/(auth)/4-pick-languages')
+    if (!!authState?.authenticated && !areLanguagesSet()) {
+      router.replace(`/(auth)/4-pick-languages?isVisuallyImpaired=${authState?.type === UserType.blind ? '1' : '0'}`)
+      return
     }
 
     if (!!authState?.authenticated) {
@@ -76,6 +77,10 @@ export const AuthProvider = ({ children }: any) => {
       router.replace('/(auth)/1-welcome')
     }
   }, [initialized, authState])
+
+  const areLanguagesSet = () => {
+    return authState?.languages.length !== 0
+  }
 
   const login = async (email: string, password: string) => {
     var json
@@ -96,9 +101,9 @@ export const AuthProvider = ({ children }: any) => {
         email: json.user.email,
         type: json.user.type,
         languages: json.user.languages,
+        friendCode: json.user.friendCode,
         jwtToken: json.jwtToken,
         streamToken: json.streamToken,
-        friendCode: json.friendCode,
       })
 
       await SecureStore.setItemAsync(USER_KEY, JSON.stringify(json))
@@ -128,9 +133,9 @@ export const AuthProvider = ({ children }: any) => {
         email: json.user.email,
         type: json.user.type,
         languages: json.user.languages,
+        friendCode: json.user.friendCode,
         jwtToken: json.jwtToken,
         streamToken: json.streamToken,
-        friendCode: json.friendCode,
       })
 
       await SecureStore.setItemAsync(USER_KEY, JSON.stringify(json))

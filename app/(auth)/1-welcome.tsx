@@ -20,7 +20,7 @@ const Welcome = () => {
   return (
     <View style={styles.mainContainer}>
       <TouchableOpacity style={[styles.topButton, { marginTop: 10 }]} onPress={redirectTo2ndStepWithCues}>
-        <Text style={[styles.headerText, { padding: 20, textAlign: 'center' }]}>I need visual assistance</Text>
+        <Text style={[styles.buttonText, { padding: 20, textAlign: 'center' }]}>I need visual assistance</Text>
       </TouchableOpacity>
       <View style={styles.middleBox}>
         <View style={styles.bar} />
@@ -31,7 +31,7 @@ const Welcome = () => {
         <View style={styles.bar} />
       </View>
       <TouchableOpacity style={[styles.bottomButton, { marginBottom: insets.bottom }]} onPress={redirectTo2nd}>
-        <Text style={[styles.headerText, { padding: 20, textAlign: 'center' }]}>
+        <Text style={[styles.buttonText, { padding: 20, textAlign: 'center' }]}>
           I'd like to help visually impaired people
         </Text>
       </TouchableOpacity>
@@ -54,6 +54,11 @@ export const styles = StyleSheet.create({
     color: Colors.fontColor,
     fontWeight: 'bold',
     fontSize: 24,
+  },
+  buttonText: {
+    color: Colors.fontColor,
+    fontWeight: 'bold',
+    fontSize: 32,
   },
   subText: {
     color: Colors.fontColor,

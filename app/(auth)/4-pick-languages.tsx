@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity, Button, ScrollView, FlatList } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Colors from '../../constants/Colors'
 import { styles as authStyles } from './1-welcome'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -23,7 +23,7 @@ const PickLanguages = () => {
   const router = useRouter()
   const insets = useSafeAreaInsets()
 
-  const { onSetLanguages } = useAuth()
+  const { authState, onSetLanguages } = useAuth()
 
   const params = useLocalSearchParams()
   const isVisuallyImpaired = params.isVisuallyImpaired === '1'
@@ -31,8 +31,21 @@ const PickLanguages = () => {
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([])
   const [selectedLanguageCodes, setSelectedLanguageCodes] = useState<string[]>([])
 
+  useEffect(() => {
+    const preselectedLanguageCodes = authState?.languages || []
+    let preselectedLanguages = []
+    for (const langCode of preselectedLanguageCodes) {
+      const language = languages.find((l) => l.code === langCode)
+      if (language) {
+        preselectedLanguages.push(language.label)
+      }
+    }
+    setSelectedLanguages(preselectedLanguages)
+    setSelectedLanguageCodes(preselectedLanguageCodes)
+  }, [])
+
   const addLanguage = (language: string, code: string) => {
-    if (!selectedLanguages.includes(language)) {
+    if (!selectedLanguageCodes.includes(code)) {
       setSelectedLanguages([...selectedLanguages, language])
       setSelectedLanguageCodes([...selectedLanguageCodes, code])
     }
@@ -75,8 +88,11 @@ const PickLanguages = () => {
       />
       <View style={styles.selectedLanguagesContainer}>
         {selectedLanguages.map((lang) => (
-          <TouchableOpacity onPress={() => removeLanguage(lang, languages.find((l) => l.label === lang)?.code || '')}>
-            <View key={lang} style={styles.tag}>
+          <TouchableOpacity
+            key={lang}
+            onPress={() => removeLanguage(lang, languages.find((l) => l.label === lang)?.code || '')}
+          >
+            <View style={styles.tag}>
               <Text style={styles.tagText}>{lang}</Text>
             </View>
           </TouchableOpacity>
@@ -91,7 +107,7 @@ const PickLanguages = () => {
         ]}
         onPress={() => handleSetLanguages()}
       >
-        <Text style={isVisuallyImpaired ? authStyles.headerText : authStyles.smallButtonText}>Next</Text>
+        <Text style={isVisuallyImpaired ? authStyles.buttonText : authStyles.smallButtonText}>Submit</Text>
       </TouchableOpacity>
     </View>
   )

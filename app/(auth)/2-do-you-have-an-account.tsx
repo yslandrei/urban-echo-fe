@@ -26,7 +26,7 @@ const DoYouHaveAnAccount = () => {
       {isVisuallyImpaired ? (
         <>
           <TouchableOpacity style={[authStyles.topButton, { marginTop: 10 }]} onPress={redirectToSignIn}>
-            <Text style={authStyles.headerText}>Yes</Text>
+            <Text style={authStyles.buttonText}>Yes</Text>
           </TouchableOpacity>
           <View style={authStyles.middleBox}>
             <View style={authStyles.bar} />
@@ -49,7 +49,7 @@ const DoYouHaveAnAccount = () => {
         style={isVisuallyImpaired ? authStyles.bottomButton : authStyles.smallButton}
         onPress={redirectToSignUp}
       >
-        <Text style={isVisuallyImpaired ? authStyles.headerText : authStyles.smallButtonText}>No</Text>
+        <Text style={isVisuallyImpaired ? authStyles.buttonText : authStyles.smallButtonText}>No</Text>
       </TouchableOpacity>
     </View>
   )
