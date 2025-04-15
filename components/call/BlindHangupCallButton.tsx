@@ -9,7 +9,7 @@ interface BlindHangupCallButtonProps {
 
 export const BlindHangupCallButton: React.FC<BlindHangupCallButtonProps> = ({ onPress }) => {
   return (
-    <TouchableOpacity onLongPress={onPress} style={[styles.button, styles.hangupButton]}>
+    <TouchableOpacity onPress={onPress} style={[styles.button, styles.hangupButton]}>
       <Text style={styles.buttonText}>Disconnect</Text>
     </TouchableOpacity>
   )

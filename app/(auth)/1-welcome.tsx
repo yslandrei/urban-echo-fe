@@ -1,9 +1,12 @@
 import { View, Text, StyleSheet, Button, Alert, TouchableOpacity, TouchableHighlight } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Colors from '../../constants/Colors'
-import { useRouter } from 'expo-router'
+import { useFocusEffect, useRouter } from 'expo-router'
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context'
-import { useHeaderHeight } from '@react-navigation/elements'
+import * as Speech from 'expo-speech'
+import { useShake } from '@/context/shake'
+import Voice from '@react-native-voice/voice'
+import { useVoiceCommands } from '@/context/voiceCommands'
 
 const Welcome = () => {
   const router = useRouter()
@@ -17,6 +20,16 @@ const Welcome = () => {
     router.push('/2-do-you-have-an-account')
   }
 
+  useVoiceCommands({
+    isVisuallyImpaired: true,
+    preface:
+      'Welcome to UrbanEcho! This app helps visually impaired users explore the world. Navigation through the app can be done both by pressing buttons or voice commands',
+    commands: {
+      'I need visual assistance': redirectTo2ndStepWithCues,
+      'I would like to volunteer': redirectTo2nd,
+    },
+  })
+
   return (
     <View style={styles.mainContainer}>
       <TouchableOpacity style={[styles.topButton, { marginTop: 10 }]} onPress={redirectTo2ndStepWithCues}>
@@ -26,7 +39,7 @@ const Welcome = () => {
         <View style={styles.bar} />
         <View style={{ flexDirection: 'column', alignItems: 'center', gap: 5 }}>
           <Text style={[styles.headerText, { marginHorizontal: 15 }]}>Welcome to UrbanEcho</Text>
-          <Text style={styles.subText}>See the world together</Text>
+          <Text style={styles.subText}>Navigate the world together</Text>
         </View>
         <View style={styles.bar} />
       </View>

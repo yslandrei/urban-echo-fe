@@ -6,12 +6,14 @@ import { Router, useRouter } from 'expo-router'
 
 interface NotificationProps {
   onSendNotificationsToRandomVolunteers: () => Promise<any>
+  onSendNotificationsToDesignatedVolunteers: () => Promise<any>
 }
 
 export const API_URL = process.env.EXPO_PUBLIC_SERVER_URL
 
 const NotificationContext = createContext<NotificationProps>({
   onSendNotificationsToRandomVolunteers: async () => {},
+  onSendNotificationsToDesignatedVolunteers: async () => {},
 })
 
 export const useNotifications = () => useContext(NotificationContext)
@@ -49,7 +51,7 @@ export const NotificationProvider = ({ children }: any) => {
     }
   }, [authState])
 
-  const sendNotification = async () => {
+  const sendNotificationToRandomVolunteers = async () => {
     try {
       const token = authState?.jwtToken
       const response = await fetch(`${API_URL}/api/notification/send-to-random-volunteers`, {
@@ -66,8 +68,30 @@ export const NotificationProvider = ({ children }: any) => {
     }
   }
 
+  const sendNotificationToDesignatedVolunteers = async () => {
+    try {
+      const token = authState?.jwtToken
+      const response = await fetch(`${API_URL}/api/notification/send-to-designated-volunteers`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      const data = await response.json()
+    } catch (error) {
+      console.error('Error sending notifications:', error)
+    }
+  }
+
   return (
-    <NotificationContext.Provider value={{ onSendNotificationsToRandomVolunteers: sendNotification }}>
+    <NotificationContext.Provider
+      value={{
+        onSendNotificationsToRandomVolunteers: sendNotificationToRandomVolunteers,
+        onSendNotificationsToDesignatedVolunteers: sendNotificationToDesignatedVolunteers,
+      }}
+    >
       {children}
     </NotificationContext.Provider>
   )

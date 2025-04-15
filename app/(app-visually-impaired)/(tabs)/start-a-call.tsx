@@ -6,6 +6,7 @@ import { styles as globalStyles } from '../../(auth)/1-welcome'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { useNotifications } from '@/context/notification'
+import { useVoiceCommands } from '@/context/voiceCommands'
 
 const StartACall = () => {
   const insets = useSafeAreaInsets()
@@ -14,20 +15,35 @@ const StartACall = () => {
 
   const { authState } = useAuth()
 
-  const { onSendNotificationsToRandomVolunteers } = useNotifications()
+  const { onSendNotificationsToRandomVolunteers, onSendNotificationsToDesignatedVolunteers } = useNotifications()
 
   const handleCallRandomVolunteer = () => {
     onSendNotificationsToRandomVolunteers()
     router.push(`/(room)/${authState?.id}`)
   }
 
+  const handleCallDesignatedVolunteer = () => {
+    onSendNotificationsToDesignatedVolunteers()
+    router.push(`/(room)/${authState?.id}`)
+  }
+
+  useVoiceCommands({
+    isVisuallyImpaired: true,
+    preface: 'Call tab.',
+    commands: {
+      'Call a random volunteer': handleCallRandomVolunteer,
+      'Call an assigned volunteer': handleCallDesignatedVolunteer,
+      'Settings tab': () => router.push('/settings'),
+    },
+  })
+
   return (
     <View style={[styles.container, { paddingTop: insets.top + 10, paddingBottom: 25, gap: 20 }]}>
-      <TouchableOpacity style={[styles.topButton]} onPress={handleCallRandomVolunteer}>
+      <TouchableOpacity onPress={handleCallRandomVolunteer} style={[styles.topButton]}>
         <Text style={[styles.headerText, { padding: 20, textAlign: 'center' }]}>Call a random volunteer</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={[styles.bottomButton, { marginTop: 10 }]} onPress={() => {}}>
-        <Text style={[styles.headerText, { padding: 20, textAlign: 'center' }]}>Call a designated volunteer</Text>
+      <TouchableOpacity onPress={handleCallDesignatedVolunteer} style={[styles.bottomButton, { marginTop: 10 }]}>
+        <Text style={[styles.headerText, { padding: 20, textAlign: 'center' }]}>Call an assigned volunteer</Text>
       </TouchableOpacity>
     </View>
   )

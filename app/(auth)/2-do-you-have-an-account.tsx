@@ -1,10 +1,12 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import Colors from '../../constants/Colors'
 import { styles as authStyles } from './1-welcome'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { useRouter } from 'expo-router'
+import { useFocusEffect, useRouter } from 'expo-router'
 import { useLocalSearchParams } from 'expo-router'
+import { useVoiceCommands } from '@/context/voiceCommands'
+import Voice from '@react-native-voice/voice'
 
 const DoYouHaveAnAccount = () => {
   const router = useRouter()
@@ -20,6 +22,16 @@ const DoYouHaveAnAccount = () => {
   const redirectToSignUp = () => {
     router.push(`/3-sign-up-or-in?isVisuallyImpaired=${params.isVisuallyImpaired}`)
   }
+
+  useVoiceCommands({
+    isVisuallyImpaired,
+    preface: 'Do you have an account?',
+    commands: {
+      Yes: redirectToSignIn,
+      No: redirectToSignUp,
+      Back: () => router.back(),
+    },
+  })
 
   return (
     <View style={[authStyles.mainContainer, { paddingBottom: insets.bottom }]}>

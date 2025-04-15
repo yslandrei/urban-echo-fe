@@ -7,8 +7,9 @@ import { useRouter } from 'expo-router'
 import { useLocalSearchParams } from 'expo-router'
 import { useAuth } from '../../context/auth'
 import Spinner from 'react-native-loading-spinner-overlay'
-import { useShake } from '../../context/shake'
 import { UserType } from '../../types/User'
+import { useVoiceCommands } from '@/context/voiceCommands'
+import * as Speech from 'expo-speech'
 
 const SignUpOrIn = () => {
   const router = useRouter()
@@ -25,30 +26,27 @@ const SignUpOrIn = () => {
   const [pass2, setPass2] = useState('')
   const [loading, setLoading] = useState(false)
 
-  // TODO: Use audio cues instead of alerts for visually impaired users for better accessibility
   const handleSignIn = async () => {
     if (!email || !pass) {
-      alert('Please fill in all fields')
+      alertUser('Alert', 'Please fill in all fields')
       return
     }
 
     setLoading(true)
     const result = await onSignIn(email, pass)
     if (result.error) {
-      Alert.alert('Error', result.msg)
+      alertUser('Error', result.msg)
     }
     setLoading(false)
   }
 
-  // TODO: After sign up we should select languages. So we should change useAuth and prob add a new variable "sign up finished"
-  // and the also a function that completes it
   const handleSignUp = async () => {
     if (!email || !pass || !pass2) {
-      alert('Please fill in all fields')
+      alertUser('Alert', 'Please fill in all fields')
       return
     }
     if (pass !== pass2) {
-      alert('Passwords do not match')
+      alertUser('Alert', 'Passwords do not match')
       return
     }
 
@@ -56,27 +54,38 @@ const SignUpOrIn = () => {
     const result = await onSignUp(email, pass, isVisuallyImpaired ? UserType.blind : UserType.volunteer)
     setLoading(false)
     if (result.error) {
-      Alert.alert('Error', result.msg)
+      alertUser('Error', result.msg)
     }
-    // else {
-    //   router.push(`/(auth)/4-pick-languages?isVisuallyImpaired=${params.isVisuallyImpaired}`)
-    // }
   }
 
-  // TODO: Shake listener for audio input
-  useShake(
-    () => {
-      if (!isVisuallyImpaired) return
+  const alertUser = (title: string, msg: string) => {
+    if (isVisuallyImpaired) {
+      if (speechInProgressRef.current) return
+      speechInProgressRef.current = true
+      Speech.speak(title + '. ' + msg, {
+        onDone: () => {
+          speechInProgressRef.current = false
 
-      console.log('Device was shaken!')
-    },
-    {
-      threshold: 800,
-      debounceMs: 5000,
-      updateInterval: 100,
-      requiredMovements: 2,
+          playVoiceCommands()
+        },
+      })
+    } else {
+      Alert.alert(title, msg)
     }
-  )
+  }
+
+  const { playVoiceCommands, onEnterEmail, onEnterPassword, speechInProgressRef } = useVoiceCommands({
+    isVisuallyImpaired,
+    preface: hasAccount ? 'Sign In' : 'Sign up',
+    commands: {
+      'Enter email': () => onEnterEmail(setEmail),
+      'Enter password': () => onEnterPassword(setPass, setPass2),
+      Submit: () => {
+        hasAccount ? handleSignIn() : handleSignUp()
+      },
+      Back: () => router.back(),
+    },
+  })
 
   return (
     <View style={[authStyles.mainContainer, { paddingTop: 10 }]}>
@@ -118,7 +127,7 @@ const SignUpOrIn = () => {
           hasAccount ? handleSignIn() : handleSignUp()
         }}
       >
-        <Text style={isVisuallyImpaired ? authStyles.buttonText : authStyles.smallButtonText}>Next</Text>
+        <Text style={isVisuallyImpaired ? authStyles.buttonText : authStyles.smallButtonText}>Submit</Text>
       </TouchableOpacity>
     </View>
   )

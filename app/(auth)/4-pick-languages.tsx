@@ -6,6 +6,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { useLocalSearchParams } from 'expo-router'
 import { useAuth } from '../../context/auth'
+import Spinner from 'react-native-loading-spinner-overlay'
+import { useVoiceCommands } from '@/context/voiceCommands'
 
 const languages = [
   { code: 'EN', label: 'English 🇬🇧' },
@@ -56,17 +58,31 @@ const PickLanguages = () => {
     setSelectedLanguageCodes(selectedLanguageCodes.filter((lang) => lang !== code))
   }
 
-  const handleSetLanguages = () => {
+  const [loading, setLoading] = useState(false)
+
+  const handleSetLanguages = async () => {
     if (selectedLanguages.length === 0) {
       alert('Please select at least one language')
       return
     }
-    onSetLanguages(selectedLanguageCodes)
+    setLoading(true)
+    await onSetLanguages(selectedLanguageCodes)
+    setLoading(false)
   }
+
+  const { onEnterLanguages } = useVoiceCommands({
+    isVisuallyImpaired,
+    preface: 'Choose Languages.',
+    commands: {
+      'Enter languages': () => onEnterLanguages(languages, setSelectedLanguages, setSelectedLanguageCodes),
+      Submit: handleSetLanguages,
+    },
+  })
 
   return (
     <View style={[authStyles.mainContainer, { paddingTop: 10 }]}>
-      <Text style={authStyles.headerText}>Pick languages</Text>
+      <Spinner visible={loading} animation="fade" size={'small'} overlayColor="rgba(0, 0, 0, 0.5)" />
+      <Text style={authStyles.headerText}>Choose languages</Text>
       <FlatList
         data={languages}
         style={styles.languageList}

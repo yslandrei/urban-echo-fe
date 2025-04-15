@@ -61,7 +61,7 @@ const InsideLayout = () => {
       <Tabs.Screen
         name="start-a-call"
         options={{
-          title: 'Start a Call',
+          title: 'Call',
           tabBarIcon: ({ color }) => <FontAwesome size={28} name="phone" color={color} />,
         }}
       />
