@@ -2,6 +2,7 @@ import React from 'react'
 import { Pressable, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import { useCall } from '@stream-io/video-react-native-sdk'
 import Colors from '@/constants/Colors'
+import Ionicons from '@expo/vector-icons/Ionicons'
 
 interface BlindHangupCallButtonProps {
   onPress: () => void
@@ -10,7 +11,8 @@ interface BlindHangupCallButtonProps {
 export const BlindHangupCallButton: React.FC<BlindHangupCallButtonProps> = ({ onPress }) => {
   return (
     <TouchableOpacity onPress={onPress} style={[styles.button, styles.hangupButton]}>
-      <Text style={styles.buttonText}>Disconnect</Text>
+      {/* <Text style={styles.buttonText}>Disconnect</Text> */}
+      <Ionicons name="call" size={50} color={Colors.fontColor} style={styles.hangupIcon} />
     </TouchableOpacity>
   )
 }
@@ -30,5 +32,8 @@ const styles = StyleSheet.create({
   },
   hangupButton: {
     backgroundColor: '#CD1C18',
+  },
+  hangupIcon: {
+    transform: [{ rotate: '135deg' }],
   },
 })
